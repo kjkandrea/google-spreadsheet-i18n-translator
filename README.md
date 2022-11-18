@@ -1,0 +1,1 @@
+# google-spreadsheet-i18n-translator
