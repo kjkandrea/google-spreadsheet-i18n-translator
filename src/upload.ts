@@ -23,20 +23,40 @@ async function main() {
       );
     }
 
-    await sheet.loadHeaderRow();
-    const headerValues = sheet.headerValues;
+    await updateKeyColumn(spreadSheet, localeMap);
 
-    const keyColumnIndex = headerValues.findIndex(
-      value => value === COLUMN_NAME.KEY
-    );
+    async function updateKeyColumn(
+      spreadSheet: GoogleSpreadsheet,
+      localeMap: Map<Locale, LocaleDictionary>
+    ) {
+      await sheet.loadHeaderRow();
+      const headerValues = sheet.headerValues;
 
-    if (keyColumnIndex === -1) {
-      throw new Error(
-        `${spreadSheet.title} 내에서 ${COLUMN_NAME.KEY} 컬럼을 찾을 수 없습니다.`
+      const keyColumnIndex = headerValues.findIndex(
+        value => value === COLUMN_NAME.KEY
       );
-    }
 
-    console.log(keyColumnIndex);
+      if (keyColumnIndex === -1) {
+        throw new Error(
+          `${spreadSheet.title} 내에서 ${COLUMN_NAME.KEY} 컬럼을 찾을 수 없습니다.`
+        );
+      }
+      const keySet = new Set(
+        [...localeMap.values()]
+          .map(localeDictionary => Object.keys(localeDictionary))
+          .flat()
+      );
+
+      const rows = await sheet.getRows();
+
+      // 이미 sheet 에 key 가 등록되어있다면 keySet 에서 삭제합니다.
+      rows.forEach(row => {
+        const keyColumn = row[COLUMN_NAME.KEY];
+        if (keySet.has(keyColumn)) keySet.delete(keyColumn);
+      });
+
+      console.log(keySet.size);
+    }
   }
 
   function readLocaleMap(
