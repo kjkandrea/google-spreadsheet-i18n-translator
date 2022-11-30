@@ -1,5 +1,3 @@
-const {GoogleSpreadsheet} = require('google-spreadsheet');
-require('dotenv').config();
+import {readSpreadSheet} from './index';
 
-const spreadSheet = new GoogleSpreadsheet(process.env.SPREADSHEET_ID);
-console.log(spreadSheet);
+console.log(readSpreadSheet());
