@@ -55,12 +55,12 @@ async function main() {
         if (keySet.has(keyColumn)) keySet.delete(keyColumn);
       });
 
-      console.log(rows[0]);
-
       // sheet 에 없는 key 가 있다면 keySet 을 이용하여 row 를 생성합니다.
       const addedRows = Array.from([...keySet], key => {
-        return {[COLUMN_NAME.KEY]: key};
+        return {[COLUMN_NAME.KEY]: key.toString()};
       });
+
+      console.log(addedRows);
 
       await sheet.addRows(addedRows);
     }
