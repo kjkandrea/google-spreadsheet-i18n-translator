@@ -3,7 +3,11 @@ import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-export async function readSpreadSheet() {
+export const COLUMN_NAME = {
+  KEY: 'key',
+};
+
+export async function readSpreadSheet(): Promise<GoogleSpreadsheet> {
   const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_ID);
 
   const googleSpreadSheetCredit = JSON.parse(
@@ -13,9 +17,7 @@ export async function readSpreadSheet() {
   await doc.useServiceAccountAuth(googleSpreadSheetCredit);
   await doc.loadInfo();
 
-  const sheet = doc.sheetsByIndex[0];
+  console.log(`${doc.title} 를 읽어들였습니다.`);
 
-  console.log(`${doc.title} : ${sheet.title} 를 읽어들였습니다.`);
-
-  return sheet;
+  return doc;
 }
