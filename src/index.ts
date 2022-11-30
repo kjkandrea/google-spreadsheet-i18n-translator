@@ -1,12 +1,13 @@
 import {GoogleSpreadsheet} from 'google-spreadsheet';
-const fs = require('fs');
-require('dotenv').config();
+import * as fs from 'fs';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export async function readSpreadSheet() {
   const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_ID);
 
   const googleSpreadSheetCredit = JSON.parse(
-    fs.readFileSync('./google-spread-sheet-credit.json')
+    fs.readFileSync('./google-spread-sheet-credit.json').toString()
   );
 
   await doc.useServiceAccountAuth(googleSpreadSheetCredit);

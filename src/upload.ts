@@ -1,6 +1,4 @@
-const fs = require('fs');
-
-console.log('upload!');
+import * as fs from 'fs';
 
 function readLocaleMap(path: string) {
   return new Map(
@@ -8,7 +6,7 @@ function readLocaleMap(path: string) {
       .readdirSync(path)
       .map((filename: string) => [
         filename.replace('.json', ''),
-        JSON.parse(fs.readFileSync(`${path}/${filename}`)),
+        JSON.parse(fs.readFileSync(`${path}/${filename}`).toString()),
       ])
   );
 }
