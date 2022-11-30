@@ -60,8 +60,6 @@ async function main() {
         return {[COLUMN_NAME.KEY]: key.toString()};
       });
 
-      console.log(addedRows);
-
       await sheet.addRows(addedRows);
     }
   }
