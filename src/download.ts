@@ -1,3 +1,5 @@
 import {readSpreadSheet} from './index';
 
-console.log(readSpreadSheet());
+readSpreadSheet().then(sheet => {
+  console.log(sheet);
+});
