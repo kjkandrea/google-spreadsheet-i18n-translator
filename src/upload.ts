@@ -1,16 +1,7 @@
 import * as fs from 'fs';
 import {readSpreadSheet, COLUMN_NAME} from './index';
-import {
-  GoogleSpreadsheet,
-  GoogleSpreadsheetRow,
-  GoogleSpreadsheetWorksheet,
-} from 'google-spreadsheet';
-
-type Locale = 'ko-kr' | 'en-us';
-interface LocaleDictionary {
-  [key: string]: string;
-}
-type RowValues = Parameters<GoogleSpreadsheetWorksheet['addRows']>[0];
+import {GoogleSpreadsheet, GoogleSpreadsheetRow} from 'google-spreadsheet';
+import type {Locale, LocaleDictionary, RowValues} from './types';
 
 async function main() {
   const localeMap = readLocaleMap('./locales', ['ko-kr', 'en-us']);
