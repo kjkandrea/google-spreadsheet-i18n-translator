@@ -113,4 +113,4 @@ async function main() {
   }
 }
 
-main();
+main().then(() => console.log('Upload is Done! 🥳'));
