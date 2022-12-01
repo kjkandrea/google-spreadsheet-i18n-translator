@@ -24,21 +24,18 @@ async function main() {
     }
 
     await sheet.loadHeaderRow();
-    const headerValues = sheet.headerValues;
+    const headerValueSet = new Set(sheet.headerValues);
     const rows = await sheet.getRows();
 
-    await updateKeyColumn(headerValues, rows, localeMap);
+    await updateKeyColumn(headerValueSet, rows, localeMap);
+    await updateTranslationValues(headerValueSet, rows, localeMap);
 
     async function updateKeyColumn(
-      headerValues: string[],
+      headerValueSet: Set<string>,
       rows: GoogleSpreadsheetRow[],
       localeMap: Map<Locale, LocaleDictionary>
     ): Promise<void> {
-      const keyColumnIndex = headerValues.findIndex(
-        value => value === COLUMN_NAME.KEY
-      );
-
-      if (keyColumnIndex === -1) {
+      if (!headerValueSet.has(COLUMN_NAME.KEY)) {
         throw new Error(` ${COLUMN_NAME.KEY} 컬럼을 찾을 수 없습니다.`);
       }
       const keySet = new Set(
@@ -59,6 +56,19 @@ async function main() {
       });
 
       if (addedRows.length) await sheet.addRows(addedRows);
+    }
+  }
+
+  async function updateTranslationValues(
+    headerValueSet: Set<string>,
+    rows: GoogleSpreadsheetRow[],
+    localeMap: Map<Locale, LocaleDictionary>
+  ) {
+    const locales = [...localeMap.keys()];
+    const missingLocale = locales.find(locale => !headerValueSet.has(locale));
+
+    if (missingLocale) {
+      throw new Error(` ${missingLocale} 컬럼을 찾을 수 없습니다.`);
     }
   }
 
