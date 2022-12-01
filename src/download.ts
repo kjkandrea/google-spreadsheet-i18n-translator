@@ -1,9 +1,14 @@
-import {COLUMN_NAME, readLocaleMap, readSpreadSheet} from './index';
+import {
+  COLUMN_NAME,
+  readLocaleMapFromJSON,
+  readSpreadSheet,
+  writeJSONFromLocaleMap,
+} from './index';
 import {Locale, LocaleDictionary} from './types';
 import {GoogleSpreadsheetRow} from 'google-spreadsheet';
 
 async function main() {
-  const localeMap = readLocaleMap();
+  const localeMap = readLocaleMapFromJSON();
   const spreadSheet = await readSpreadSheet();
   await updateLocaleJSON();
 
@@ -24,7 +29,7 @@ async function main() {
       ])
     );
 
-    console.log(sheetLocaleMap);
+    await writeJSONFromLocaleMap(sheetLocaleMap);
 
     function readSheetLocaleDictionary(
       locale: Locale,

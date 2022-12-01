@@ -1,15 +1,15 @@
-import {readSpreadSheet, COLUMN_NAME, readLocaleMap} from './index';
+import {readSpreadSheet, COLUMN_NAME, readLocaleMapFromJSON} from './index';
 import {GoogleSpreadsheet, GoogleSpreadsheetRow} from 'google-spreadsheet';
-import type {Locale, LocaleDictionary, RowValues} from './types';
+import type {LocaleMap, RowValues} from './types';
 
 async function main() {
-  const localeMap = readLocaleMap();
+  const localeMap = readLocaleMapFromJSON();
   const spreadSheet = await readSpreadSheet();
   await updateSheet(spreadSheet, localeMap);
 
   async function updateSheet(
     spreadSheet: GoogleSpreadsheet,
-    localeMap: Map<Locale, LocaleDictionary>
+    localeMap: LocaleMap
   ) {
     const sheet = spreadSheet.sheetsByIndex[0];
     if (!sheet) {
@@ -42,7 +42,7 @@ async function main() {
     function makeNewKeyRowValues(
       headerValueSet: Set<string>,
       rows: GoogleSpreadsheetRow[],
-      localeMap: Map<Locale, LocaleDictionary>
+      localeMap: LocaleMap
     ): RowValues {
       if (!headerValueSet.has(COLUMN_NAME.KEY)) {
         throw new Error(
@@ -71,7 +71,7 @@ async function main() {
   async function makeTranslatedRows(
     headerValueSet: Set<string>,
     keyUpdatedRows: GoogleSpreadsheetRow[],
-    localeMap: Map<Locale, LocaleDictionary>
+    localeMap: LocaleMap
   ) {
     const locales = [...localeMap.keys()];
     const missingLocale = locales.find(locale => !headerValueSet.has(locale));

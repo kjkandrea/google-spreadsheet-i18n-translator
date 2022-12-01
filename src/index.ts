@@ -1,7 +1,7 @@
 import {GoogleSpreadsheet} from 'google-spreadsheet';
 import * as fs from 'fs';
 import * as dotenv from 'dotenv';
-import {Locale, LocaleDictionary} from './types';
+import {Locale, LocaleDictionary, LocaleMap} from './types';
 dotenv.config();
 
 export const COLUMN_NAME = {
@@ -23,14 +23,16 @@ export async function readSpreadSheet(): Promise<GoogleSpreadsheet> {
   return doc;
 }
 
-export function readLocaleMap(): Map<Locale, LocaleDictionary> {
-  const PATH = './locales';
-  const LOCALES: Locale[] = ['ko-kr', 'en-us'];
+const PATH = './locales';
+const LOCALES: Locale[] = ['ko-kr', 'en-us'];
 
+export function readLocaleMapFromJSON(): LocaleMap {
   return new Map(
     LOCALES.map((locale: Locale) => {
+      const JSONPath = `${PATH}/${locale}.json`;
+
       const localeDictionary: LocaleDictionary = JSON.parse(
-        fs.readFileSync(`${PATH}/${locale}.json`).toString()
+        fs.readFileSync(JSONPath).toString()
       );
       if (!localeDictionary) {
         throw new Error(
@@ -40,4 +42,12 @@ export function readLocaleMap(): Map<Locale, LocaleDictionary> {
       return [locale, localeDictionary];
     })
   );
+}
+
+export function writeJSONFromLocaleMap(localeMap: LocaleMap) {
+  localeMap.forEach((localeDictionary, locale) => {
+    const JSONPath = `${PATH}/${locale}.json`;
+
+    fs.writeFileSync(JSONPath, JSON.stringify(localeDictionary, null, 2));
+  });
 }
