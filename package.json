@@ -1,6 +1,6 @@
 {
   "name": "google-spreadsheet-i18n-translator",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "",
   "main": "./src",
   "engines": {
