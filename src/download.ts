@@ -1,15 +1,12 @@
-import {
-  COLUMN_NAME,
-  readLocaleMapFromJSON,
-  readSpreadSheet,
-  writeJSONFromLocaleMap,
-} from './index';
-import {Locale, LocaleDictionary} from './types';
-import {GoogleSpreadsheetRow} from 'google-spreadsheet';
+import {COLUMN_NAME} from './index';
+import {Locale, LocaleDictionary, LocaleMap} from './types';
+import {GoogleSpreadsheet, GoogleSpreadsheetRow} from 'google-spreadsheet';
 
-async function main() {
-  const localeMap = readLocaleMapFromJSON();
-  const spreadSheet = await readSpreadSheet();
+export async function download(
+  localeMap: LocaleMap,
+  spreadSheet: GoogleSpreadsheet,
+  writeJSONFromLocaleMap: (localeMap: LocaleMap) => void
+) {
   await updateLocaleJSON();
 
   async function updateLocaleJSON() {
@@ -29,7 +26,7 @@ async function main() {
       ])
     );
 
-    await writeJSONFromLocaleMap(sheetLocaleMap);
+    return writeJSONFromLocaleMap(sheetLocaleMap);
 
     function readSheetLocaleDictionary(
       locale: Locale,
@@ -41,5 +38,3 @@ async function main() {
     }
   }
 }
-
-main().then(() => console.log('Download is Done! 🥳'));

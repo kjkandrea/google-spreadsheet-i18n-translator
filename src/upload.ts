@@ -1,10 +1,11 @@
-import {readSpreadSheet, COLUMN_NAME, readLocaleMapFromJSON} from './index';
+import {COLUMN_NAME} from './index';
 import {GoogleSpreadsheet, GoogleSpreadsheetRow} from 'google-spreadsheet';
 import type {LocaleMap, RowValues} from './types';
 
-async function main() {
-  const localeMap = readLocaleMapFromJSON();
-  const spreadSheet = await readSpreadSheet();
+export async function upload(
+  localeMap: LocaleMap,
+  spreadSheet: GoogleSpreadsheet
+) {
   await updateSheet(spreadSheet, localeMap);
 
   async function updateSheet(
@@ -92,5 +93,3 @@ async function main() {
     });
   }
 }
-
-main().then(() => console.log('Upload is Done! 🥳'));
