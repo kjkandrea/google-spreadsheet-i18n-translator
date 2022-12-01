@@ -10,6 +10,7 @@ type Locale = 'ko-kr' | 'en-us';
 interface LocaleDictionary {
   [key: string]: string;
 }
+type RowValues = Parameters<GoogleSpreadsheetWorksheet['addRows']>[0];
 
 async function main() {
   const localeMap = readLocaleMap('./locales', ['ko-kr', 'en-us']);
@@ -31,29 +32,28 @@ async function main() {
     const headerValueSet = new Set(sheet.headerValues);
     const rows = await sheet.getRows();
 
-    await updateKeyColumn(
+    const keyRowValues: RowValues = makeNewKeyRowValues(
       headerValueSet,
       rows,
-      sheet.addRows.bind(sheet),
       localeMap
     );
 
-    const keyRows = await sheet.getRows();
-
-    await updateTranslationValues(
+    if (keyRowValues.length) await sheet.addRows(keyRowValues);
+    const keyUpdatedRows = await sheet.getRows();
+    const translatedRows = await makeTranslatedRows(
       headerValueSet,
-      keyRows,
-      sheet.clearRows.bind(sheet),
-      sheet.addRows.bind(sheet),
+      keyUpdatedRows,
       localeMap
     );
 
-    async function updateKeyColumn(
+    await sheet.clearRows();
+    await sheet.addRows(translatedRows);
+
+    function makeNewKeyRowValues(
       headerValueSet: Set<string>,
       rows: GoogleSpreadsheetRow[],
-      addRows: GoogleSpreadsheetWorksheet['addRows'],
       localeMap: Map<Locale, LocaleDictionary>
-    ): Promise<void> {
+    ): RowValues {
       if (!headerValueSet.has(COLUMN_NAME.KEY)) {
         throw new Error(
           ` ${COLUMN_NAME.KEY} 컬럼을 시트 내에서 찾을 수 없습니다.`
@@ -71,20 +71,16 @@ async function main() {
         if (keySet.has(keyColumn)) keySet.delete(keyColumn);
       });
 
-      // sheet 에 없는 key 가 있다면 keySet 을 이용하여 row 를 생성합니다.
-      const addedRows = Array.from([...keySet], key => ({
+      // sheet 에 없는 key 가 있다면 keySet 을 이용하여 rowValue 를 생성합니다.
+      return Array.from([...keySet], key => ({
         [COLUMN_NAME.KEY]: key.toString(),
       }));
-
-      if (addedRows.length) await addRows(addedRows);
     }
   }
 
-  async function updateTranslationValues(
+  async function makeTranslatedRows(
     headerValueSet: Set<string>,
-    rows: GoogleSpreadsheetRow[],
-    clearRows: GoogleSpreadsheetWorksheet['clearRows'],
-    addRows: GoogleSpreadsheetWorksheet['addRows'],
+    keyUpdatedRows: GoogleSpreadsheetRow[],
     localeMap: Map<Locale, LocaleDictionary>
   ) {
     const locales = [...localeMap.keys()];
@@ -94,22 +90,16 @@ async function main() {
       throw new Error(` ${missingLocale} 컬럼을 시트 내에서 찾을 수 없습니다.`);
     }
 
-    // TODO: locale 모두 cell 생성. 현재는 ko-kr 만 생성됨
-    const newRows = rows.map(row => {
+    return keyUpdatedRows.map(row => {
       const key = row[COLUMN_NAME.KEY];
-      const koLocaleDictionary = localeMap.get('ko-kr')!;
-      const translationValue = koLocaleDictionary[key];
 
-      return translationValue
-        ? {
-            ...row,
-            ['ko-kr']: translationValue,
-          }
-        : row;
+      return {
+        ...row,
+        ...Object.fromEntries(
+          locales.map(locale => [locale, localeMap.get(locale)?.[key]])
+        ),
+      };
     });
-
-    await clearRows();
-    await addRows(newRows);
   }
 
   function readLocaleMap(

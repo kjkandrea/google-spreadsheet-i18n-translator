@@ -4,6 +4,9 @@
   "description": "",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "files": [
     "build/src"
   ],
