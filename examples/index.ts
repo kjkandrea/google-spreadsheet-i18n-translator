@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import {GoogleSpreadsheetI18nUpdater} from '../src';
+import {GoogleSpreadsheetI18nUpdater} from '..';
 
 const commends = ['upload', 'download'] as const;
 type Commend = typeof commends[number];
@@ -35,5 +35,3 @@ switch (cmd) {
       .then(() => console.log('Download is Done! 🥳'));
     break;
 }
-
-console.log(process.env.I18N_SPREADSHEET_ID);
