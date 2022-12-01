@@ -63,8 +63,6 @@ export class GoogleSpreadsheetI18nUpdater {
   }
 
   private readLocaleMapFromJSON(): LocaleMap {
-    console.log(this.locales);
-
     return new Map(
       this.locales.map((locale: Locale) => {
         const JSONPath = `${this.jsonDirectoryPath}/${locale}.json`;
