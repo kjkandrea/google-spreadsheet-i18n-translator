@@ -1,10 +1,9 @@
-import * as fs from 'fs';
-import {readSpreadSheet, COLUMN_NAME} from './index';
+import {readSpreadSheet, COLUMN_NAME, readLocaleMap} from './index';
 import {GoogleSpreadsheet, GoogleSpreadsheetRow} from 'google-spreadsheet';
 import type {Locale, LocaleDictionary, RowValues} from './types';
 
 async function main() {
-  const localeMap = readLocaleMap('./locales', ['ko-kr', 'en-us']);
+  const localeMap = readLocaleMap();
   const spreadSheet = await readSpreadSheet();
   await updateSheet(spreadSheet, localeMap);
 
@@ -91,25 +90,6 @@ async function main() {
         ),
       };
     });
-  }
-
-  function readLocaleMap(
-    path: string,
-    locales: Locale[]
-  ): Map<Locale, LocaleDictionary> {
-    return new Map(
-      locales.map((locale: Locale) => {
-        const localeDictionary: LocaleDictionary = JSON.parse(
-          fs.readFileSync(`${path}/${locale}.json`).toString()
-        );
-        if (!localeDictionary) {
-          throw new Error(
-            `${path}/${locale}.json 를 읽어들이는데에 실패하였습니다.`
-          );
-        }
-        return [locale, localeDictionary];
-      })
-    );
   }
 }
 

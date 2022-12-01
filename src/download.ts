@@ -1,5 +1,10 @@
-import {readSpreadSheet} from './index';
+import {readLocaleMap, readSpreadSheet} from './index';
 
-readSpreadSheet().then(sheet => {
-  console.log(sheet);
-});
+async function main() {
+  const localeMap = readLocaleMap();
+  const spreadSheet = await readSpreadSheet();
+
+  console.log(localeMap, spreadSheet);
+}
+
+main().then(() => console.log('Download is Done! 🥳'));
