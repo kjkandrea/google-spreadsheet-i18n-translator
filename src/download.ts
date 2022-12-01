@@ -1,10 +1,40 @@
-import {readLocaleMap, readSpreadSheet} from './index';
+import {COLUMN_NAME, readLocaleMap, readSpreadSheet} from './index';
+import {Locale, LocaleDictionary} from './types';
+import {GoogleSpreadsheetRow} from 'google-spreadsheet';
 
 async function main() {
   const localeMap = readLocaleMap();
   const spreadSheet = await readSpreadSheet();
+  await updateLocaleJSON();
 
-  console.log(localeMap, spreadSheet);
+  async function updateLocaleJSON() {
+    const sheet = spreadSheet.sheetsByIndex[0];
+    if (!sheet) {
+      throw new Error(
+        `${spreadSheet.title} : 첫번째 시트를 읽어들이는데에 실패하였습니다.`
+      );
+    }
+
+    const rows = await sheet.getRows();
+
+    const sheetLocaleMap = new Map(
+      [...localeMap.keys()].map(locale => [
+        locale,
+        readSheetLocaleDictionary(locale, rows),
+      ])
+    );
+
+    console.log(sheetLocaleMap);
+
+    function readSheetLocaleDictionary(
+      locale: Locale,
+      rows: GoogleSpreadsheetRow[]
+    ): LocaleDictionary {
+      return Object.fromEntries(
+        rows.map(row => [row[COLUMN_NAME.KEY], row[locale]])
+      );
+    }
+  }
 }
 
 main().then(() => console.log('Download is Done! 🥳'));
