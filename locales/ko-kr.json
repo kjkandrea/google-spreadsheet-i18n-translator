@@ -1,6 +1,4 @@
 {
-  "block title": "빠른 계산",
-  "block description": "고객을 위한 빠른 결제 옵션을 제공하세요.",
   "Filter by rating": "평가로 필터링",
   "Filter by Stock": "재고로 필터링",
   "Enable customers to filter the product grid by choosing a price range.": "고객이 가격 범위를 선택하여 상품 그리드를 필터링하는 것을 활성화합니다.",
