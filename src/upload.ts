@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import {readSpreadSheet, COLUMN_NAME} from './index';
-import {GoogleSpreadsheet} from 'google-spreadsheet';
+import {GoogleSpreadsheet, GoogleSpreadsheetRow} from 'google-spreadsheet';
 
 type Locale = 'ko-kr' | 'en-us';
 interface LocaleDictionary {
@@ -23,31 +23,29 @@ async function main() {
       );
     }
 
-    await updateKeyColumn(spreadSheet, localeMap);
+    await sheet.loadHeaderRow();
+    const headerValues = sheet.headerValues;
+    const rows = await sheet.getRows();
+
+    await updateKeyColumn(headerValues, rows, localeMap);
 
     async function updateKeyColumn(
-      spreadSheet: GoogleSpreadsheet,
+      headerValues: string[],
+      rows: GoogleSpreadsheetRow[],
       localeMap: Map<Locale, LocaleDictionary>
-    ) {
-      await sheet.loadHeaderRow();
-      const headerValues = sheet.headerValues;
-
+    ): Promise<void> {
       const keyColumnIndex = headerValues.findIndex(
         value => value === COLUMN_NAME.KEY
       );
 
       if (keyColumnIndex === -1) {
-        throw new Error(
-          `${spreadSheet.title} 내에서 ${COLUMN_NAME.KEY} 컬럼을 찾을 수 없습니다.`
-        );
+        throw new Error(` ${COLUMN_NAME.KEY} 컬럼을 찾을 수 없습니다.`);
       }
       const keySet = new Set(
         [...localeMap.values()]
           .map(localeDictionary => Object.keys(localeDictionary))
           .flat()
       );
-
-      const rows = await sheet.getRows();
 
       // 이미 sheet 에 key 가 등록되어있다면 keySet 에서 삭제합니다.
       rows.forEach(row => {
@@ -60,7 +58,7 @@ async function main() {
         return {[COLUMN_NAME.KEY]: key.toString()};
       });
 
-      await sheet.addRows(addedRows);
+      if (addedRows.length) await sheet.addRows(addedRows);
     }
   }
 
