@@ -87,7 +87,7 @@ export async function upload(
       return {
         ...row,
         ...Object.fromEntries(
-          locales.map(locale => [locale, localeMap.get(locale)?.[key]])
+          locales.map(locale => [locale, localeMap.get(locale)?.[key] || 'N/A'])
         ),
       };
     });
