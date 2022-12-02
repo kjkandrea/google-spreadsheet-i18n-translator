@@ -87,7 +87,11 @@ export async function upload(
       return {
         ...row,
         ...Object.fromEntries(
-          locales.map(locale => [locale, localeMap.get(locale)?.[key] || 'N/A'])
+          locales.map(locale => {
+            const translatedValue =
+              row[locale] || localeMap.get(locale)?.[key] || 'N/A';
+            return [locale, translatedValue];
+          })
         ),
       };
     });
