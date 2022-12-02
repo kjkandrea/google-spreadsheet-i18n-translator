@@ -33,7 +33,7 @@ export async function download(
       rows: GoogleSpreadsheetRow[]
     ): LocaleDictionary {
       return Object.fromEntries(
-        rows.map(row => [row[COLUMN_NAME.KEY], row[locale]])
+        rows.map(row => [row[COLUMN_NAME.KEY], row[locale] ?? 'N/A'])
       );
     }
   }
