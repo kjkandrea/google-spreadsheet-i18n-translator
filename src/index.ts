@@ -66,15 +66,17 @@ export class GoogleSpreadsheetI18nUpdater {
     return new Map(
       this.locales.map((locale: Locale) => {
         const JSONPath = `${this.jsonDirectoryPath}/${locale}.json`;
+        let JSONData: Buffer | null;
 
-        const localeDictionary: LocaleDictionary = JSON.parse(
-          fs.readFileSync(JSONPath).toString()
-        );
-        if (!localeDictionary) {
-          throw new Error(
-            `${this.jsonDirectoryPath}/${locale}.json 를 읽어들이는데에 실패하였습니다.`
-          );
+        try {
+          JSONData = fs.readFileSync(JSONPath);
+        } catch (e) {
+          JSONData = null;
         }
+
+        const localeDictionary: LocaleDictionary = JSONData
+          ? JSON.parse(JSONData.toString())
+          : {};
         return [locale, localeDictionary];
       })
     );
