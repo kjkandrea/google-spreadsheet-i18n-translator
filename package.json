@@ -2,7 +2,8 @@
   "name": "google-spreadsheet-i18n-translator",
   "version": "1.0.0",
   "description": "",
-  "main": "./src",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "engines": {
     "node": ">=16.0.0"
   },
@@ -12,6 +13,7 @@
   "license": "Apache-2.0",
   "keywords": [],
   "scripts": {
+    "build": "tsc",
     "upload": "ts-node examples/index.ts upload",
     "download": "ts-node examples/index.ts download",
     "test": "echo \"Error: no test specified\" && exit 1",
